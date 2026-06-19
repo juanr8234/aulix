@@ -1,0 +1,53 @@
+{
+  "format": "aulix-plan",
+  "version": 1,
+  "meta": {
+    "university": "UTN — FRRe",
+    "career": "Ingeniería en Sistemas de Información",
+    "author": "Aulix",
+    "sourceUrl": "https://www.frre.utn.edu.ar/",
+    "updatedAt": "2026-05-30"
+  },
+  "subjects": [
+    { "code": "M01", "name": "Análisis Matemático I", "year": 1, "correlativesRegular": [], "correlativesApproved": [] },
+    { "code": "M02", "name": "Álgebra y Geometría Analítica", "year": 1, "correlativesRegular": [], "correlativesApproved": [] },
+    { "code": "M03", "name": "Física I", "year": 1, "correlativesRegular": [], "correlativesApproved": [] },
+    { "code": "M04", "name": "Inglés I", "year": 1, "correlativesRegular": [], "correlativesApproved": [] },
+    { "code": "M05", "name": "Lógica y Estructuras Discretas", "year": 1, "correlativesRegular": [], "correlativesApproved": [] },
+    { "code": "M06", "name": "Algoritmos y Estructuras de Datos", "year": 1, "correlativesRegular": [], "correlativesApproved": [] },
+    { "code": "M07", "name": "Arquitectura de Computadoras", "year": 1, "correlativesRegular": [], "correlativesApproved": [] },
+    { "code": "M08", "name": "Sistemas y Procesos de Negocio", "year": 1, "correlativesRegular": [], "correlativesApproved": [] },
+
+    { "code": "M09", "name": "Análisis Matemático II", "year": 2, "correlativesRegular": ["M01", "M02"], "correlativesApproved": [] },
+    { "code": "M10", "name": "Física II", "year": 2, "correlativesRegular": ["M01", "M03"], "correlativesApproved": [] },
+    { "code": "M11", "name": "Ingeniería y Sociedad", "year": 2, "correlativesRegular": [], "correlativesApproved": [] },
+    { "code": "M12", "name": "Inglés II", "year": 2, "correlativesRegular": ["M04"], "correlativesApproved": [] },
+    { "code": "M13", "name": "Sintaxis y Semántica de los Lenguajes", "year": 2, "correlativesRegular": ["M05", "M06"], "correlativesApproved": [] },
+    { "code": "M14", "name": "Paradigmas de Programación", "year": 2, "correlativesRegular": ["M05", "M06"], "correlativesApproved": [] },
+    { "code": "M15", "name": "Sistemas Operativos", "year": 2, "correlativesRegular": ["M07"], "correlativesApproved": [] },
+    { "code": "M16", "name": "Análisis de Sistemas de Información", "year": 2, "correlativesRegular": ["M06", "M07", "M08"], "correlativesApproved": [] },
+
+    { "code": "M17", "name": "Probabilidad y Estadística", "year": 3, "correlativesRegular": ["M01", "M02"], "correlativesApproved": [] },
+    { "code": "M18", "name": "Economía", "year": 3, "correlativesRegular": [], "correlativesApproved": ["M01", "M02"] },
+    { "code": "M19", "name": "Bases de Datos", "year": 3, "correlativesRegular": ["M13", "M14", "M15", "M16"], "correlativesApproved": ["M05", "M06"] },
+    { "code": "M20", "name": "Desarrollo de Software", "year": 3, "correlativesRegular": ["M14", "M15", "M16"], "correlativesApproved": ["M05", "M06"] },
+    { "code": "M21", "name": "Comunicación de Datos", "year": 3, "correlativesRegular": [], "correlativesApproved": ["M03", "M04", "M05", "M06", "M07"] },
+    { "code": "M22", "name": "Análisis Numérico", "year": 3, "correlativesRegular": ["M09"], "correlativesApproved": ["M01", "M02"] },
+    { "code": "M23", "name": "Diseño de Sistemas de Información", "year": 3, "correlativesRegular": ["M14", "M15", "M16"], "correlativesApproved": ["M04", "M06", "M08"] },
+
+    { "code": "M24", "name": "Legislación", "year": 4, "correlativesRegular": ["M11"], "correlativesApproved": [] },
+    { "code": "M25", "name": "Ingeniería y Calidad de Software", "year": 4, "correlativesRegular": ["M19", "M20", "M23"], "correlativesApproved": ["M13", "M14"] },
+    { "code": "M26", "name": "Redes de Datos", "year": 4, "correlativesRegular": ["M15", "M21"], "correlativesApproved": [] },
+    { "code": "M27", "name": "Investigación Operativa", "year": 4, "correlativesRegular": ["M17", "M22"], "correlativesApproved": [] },
+    { "code": "M28", "name": "Simulación", "year": 4, "correlativesRegular": ["M17"], "correlativesApproved": ["M09"] },
+    { "code": "M29", "name": "Tecnologías para la Automatización", "year": 4, "correlativesRegular": ["M10", "M22"], "correlativesApproved": ["M09"] },
+    { "code": "M30", "name": "Administración de Sistemas de Información", "year": 4, "correlativesRegular": ["M18", "M23"], "correlativesApproved": ["M16"] },
+
+    { "code": "M31", "name": "Inteligencia Artificial", "year": 5, "correlativesRegular": ["M28"], "correlativesApproved": ["M17", "M18", "M19", "M20", "M21", "M22"] },
+    { "code": "M32", "name": "Ciencia de Datos", "year": 5, "correlativesRegular": ["M28"], "correlativesApproved": ["M17", "M18", "M19"] },
+    { "code": "M33", "name": "Sistemas de Gestión", "year": 5, "correlativesRegular": ["M18", "M19", "M20", "M21", "M22", "M23", "M24", "M25", "M26", "M27"], "correlativesApproved": ["M23"] },
+    { "code": "M34", "name": "Gestión Gerencial", "year": 5, "correlativesRegular": ["M24", "M25", "M26", "M27", "M28", "M29", "M30"], "correlativesApproved": ["M18"] },
+    { "code": "M35", "name": "Seguridad en los Sistemas de Información", "year": 5, "correlativesRegular": ["M26", "M27", "M28", "M29", "M30"], "correlativesApproved": ["M20", "M21"] },
+    { "code": "M36", "name": "Proyecto Final", "year": 5, "correlativesRegular": ["M25", "M26", "M30"], "correlativesApproved": ["M12", "M20", "M23"] }
+  ]
+}

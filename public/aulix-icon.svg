@@ -1,0 +1,12 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="120" fill="#0F172A"/>
+
+  <!-- Main geometric A -->
+  <path d="M256 96L384 384H326L294 306H218L186 384H128L256 96Z" fill="#F8FAFC"/>
+
+  <!-- Inner cut -->
+  <path d="M256 190L236 244H276L256 190Z" fill="#0F172A"/>
+
+  <!-- Minimal accent -->
+  <circle cx="372" cy="140" r="18" fill="#38BDF8"/>
+</svg>

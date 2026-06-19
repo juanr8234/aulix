@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Temas de color ───────────────────────────────────────────
+   Valores en canal RGB ("R G B") para usar con rgb(var(--x) / alpha).
+   --brand: color principal · --brand-glow: hover (más claro)
+   --brand-strong: gradiente/active (más oscuro) · --brand-soft: fondos oscuros */
+/* Texto por defecto (temas oscuros): casi blanco. El tema claro lo sobrescribe. */
+:root {
+  --ink: 232 237 247;
+  --ink-dim: 154 166 194;
+  --ink-mute: 107 119 149;
+}
+:root, :root[data-theme="blue"] {
+  --brand: 59 130 246;
+  --brand-glow: 96 165 250;
+  --brand-strong: 37 99 235;
+  --brand-soft: 30 58 138;
+  --bg: 10 14 26;
+  --bg-elev: 17 23 41;
+  --bg-card: 22 32 53;
+  --bg-soft: 31 43 69;
+  --line: 40 53 87;
+}
+/* Rosa = modo CLARO (girly): fondos rosa-blanco, texto oscuro, acento rosa fuerte. */
+:root[data-theme="pink"] {
+  --brand: 236 72 153;
+  --brand-glow: 244 114 182;
+  --brand-strong: 190 24 93;
+  --brand-soft: 131 24 67;
+  --bg: 253 242 247;
+  --bg-elev: 252 233 242;
+  --bg-card: 255 251 253;
+  --bg-soft: 250 224 235;
+  --line: 244 200 218;
+  --ink: 61 26 43;
+  --ink-dim: 124 84 102;
+  --ink-mute: 168 130 146;
+}
+:root[data-theme="teal"] {
+  --brand: 37 150 190;
+  --brand-glow: 75 185 222;
+  --brand-strong: 28 116 148;
+  --brand-soft: 12 60 78;
+  --bg: 7 18 23;
+  --bg-elev: 12 28 34;
+  --bg-card: 16 38 46;
+  --bg-soft: 23 53 63;
+  --line: 31 70 82;
+}
+:root[data-theme="violet"] {
+  --brand: 168 85 247;
+  --brand-glow: 192 132 252;
+  --brand-strong: 147 51 234;
+  --brand-soft: 59 26 92;
+  --bg: 16 11 26;
+  --bg-elev: 24 17 41;
+  --bg-card: 31 23 53;
+  --bg-soft: 43 32 69;
+  --line: 56 42 87;
+}
+:root[data-theme="emerald"] {
+  --brand: 16 185 129;
+  --brand-glow: 52 211 153;
+  --brand-strong: 5 150 105;
+  --brand-soft: 6 60 46;
+  --bg: 8 20 15;
+  --bg-elev: 13 31 23;
+  --bg-card: 17 42 31;
+  --bg-soft: 24 58 42;
+  --line: 32 76 56;
+}
+:root[data-theme="amber"] {
+  --brand: 245 158 11;
+  --brand-glow: 251 191 36;
+  --brand-strong: 217 119 6;
+  --brand-soft: 90 61 16;
+  --bg: 24 17 7;
+  --bg-elev: 35 26 12;
+  --bg-card: 45 34 16;
+  --bg-soft: 61 47 23;
+  --line: 79 61 31;
+}
+
+html, body, #root { height: 100%; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+/* Scrollbar más sutil */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(var(--line)); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--brand-soft)); }
+
+/* Selección con color de marca */
+::selection { background: rgb(var(--brand) / 0.35); color: rgb(var(--ink)); }
+
+/* ── Ajustes de contraste para el tema claro (rosa) ──────────────
+   Los colores pastel (-300/-400) se leen mal sobre fondo claro; los
+   remapeamos a tonos más oscuros solo en este tema. */
+:root[data-theme="pink"] .text-emerald-300,
+:root[data-theme="pink"] .text-emerald-400 { color: #047857; }
+:root[data-theme="pink"] .text-amber-300,
+:root[data-theme="pink"] .text-amber-400 { color: #b45309; }
+:root[data-theme="pink"] .text-blue-300,
+:root[data-theme="pink"] .text-blue-400 { color: #1d4ed8; }
+:root[data-theme="pink"] .text-red-300,
+:root[data-theme="pink"] .text-red-400 { color: #dc2626; }
+:root[data-theme="pink"] .text-rose-300 { color: #be123c; }
+:root[data-theme="pink"] .text-violet-300 { color: #6d28d9; }
+
+:root[data-theme="pink"] .cal-day-holiday { color: #b91c1c; }
+:root[data-theme="pink"] .cal-day-recess { color: #0369a1; }
+:root[data-theme="pink"] .cal-day-mesa { color: #b45309; }
+:root[data-theme="pink"] .cal-day-milestone { color: #15803d; }
+
+@layer components {
+  .card {
+    @apply bg-bg-card border border-line rounded-2xl shadow-soft;
+  }
+  .card-hover {
+    @apply card hover:border-brand/40 transition-colors;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition;
+  }
+  .btn-primary {
+    @apply btn text-white shadow-sm;
+    background: linear-gradient(135deg, rgb(var(--brand)) 0%, rgb(var(--brand-strong)) 100%);
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, rgb(var(--brand-glow)) 0%, rgb(var(--brand)) 100%);
+  }
+  .btn-primary:active {
+    background: linear-gradient(135deg, rgb(var(--brand-strong)) 0%, rgb(var(--brand-soft)) 100%);
+  }
+  .btn-ghost {
+    @apply btn text-ink-dim hover:text-ink hover:bg-bg-soft;
+  }
+  .btn-outline {
+    @apply btn border border-line text-ink hover:border-brand hover:text-brand-glow bg-transparent;
+  }
+  .btn-danger {
+    @apply btn bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20;
+  }
+  .input {
+    @apply w-full bg-bg-elev border border-line rounded-lg px-3 py-2 text-sm
+           text-ink placeholder:text-ink-mute focus:outline-none focus:border-brand
+           focus:ring-2 focus:ring-brand/20 transition;
+  }
+  .label {
+    @apply block text-xs uppercase tracking-wider text-ink-mute mb-1.5 font-semibold;
+  }
+  .chip {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider;
+  }
+  .section-title {
+    @apply text-xs uppercase tracking-[0.18em] text-ink-mute font-semibold;
+  }
+  .display {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  /* Glow sutil en focus */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand;
+  }
+}
+
+/* Note editor (mantengo el de antes, ajustando colores) */
+.note-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #6b7795;
+}
+.note-editor:focus { outline: none; }
+.note-editor h1 { font-size: 1.5rem; font-weight: 700; margin: 0.6rem 0; }
+.note-editor h2 { font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0; }
+.note-editor ul { list-style: disc; padding-left: 1.4rem; }
+.note-editor ol { list-style: decimal; padding-left: 1.4rem; }
+.note-editor a { color: #60a5fa; text-decoration: underline; }
+.note-editor blockquote { border-left: 3px solid rgb(var(--line)); padding-left: 0.8rem; color: #9aa6c2; }
+.note-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.6rem;
+  border: 1px solid rgb(var(--line));
+  margin: 0.6rem 0;
+  display: block;
+}
+
+/* Calendar academic event styles */
+.cal-day {
+  position: relative;
+  isolation: isolate;
+}
+.cal-day-holiday {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+.cal-day-recess {
+  background: rgba(125, 211, 252, 0.18);
+  color: #bae6fd;
+  border-color: rgba(125, 211, 252, 0.35);
+}
+.cal-day-mesa {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(251, 191, 36, 0.25) 100%);
+  color: #fed7aa;
+  border-color: rgba(251, 146, 60, 0.4);
+}
+.cal-day-milestone {
+  background: rgba(134, 239, 172, 0.18);
+  color: #bbf7d0;
+  border-color: rgba(134, 239, 172, 0.4);
+}
