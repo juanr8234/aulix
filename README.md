@@ -34,7 +34,7 @@ Si quieres probar Aulix en tu computadora y ver cómo funciona el código, solo 
 
 ```bash
 # Clona el proyecto
-git clone https://github.com/tu-usuario/aulix.git
+git clone https://github.com/juanr8234/aulix.git
 
 # Entra a la carpeta
 cd aulix
