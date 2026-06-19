@@ -49,6 +49,10 @@ function initialLang(): string {
     const l = localStorage.getItem(KEY);
     if (l && DICTS[l]) return l;
   } catch {}
+  try {
+    const sysLang = navigator.language.split('-')[0];
+    if (DICTS[sysLang]) return sysLang;
+  } catch {}
   return DEFAULT;
 }
 
