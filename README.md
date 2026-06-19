@@ -94,4 +94,4 @@ Aulix guarda un archivo JSON local en el directorio de datos de tu usuario:
 
 ---
 
-Hecho con mucho ☕ y cariño por estudiantes de sistemas. ¡Esperamos que te sea muy útil en tu carrera!
+Hecho con mucho ☕ y cariño por un loquito de sistemas. ¡Espero que te sea muy útil en tu carrera!
