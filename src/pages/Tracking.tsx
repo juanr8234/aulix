@@ -84,6 +84,9 @@ export default function Tracking() {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto space-y-5">
+      <div className="bg-amber-500/20 border border-amber-500/40 rounded-lg p-3 text-sm text-amber-300 text-center font-bold">
+        ⚠️ [DEBUG] Lógica académica activa: El selector debajo solo debe mostrar materias en curso/regulares.
+      </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-ink-dim">{t('tasks.intro')}</p>
         <div className="flex items-center gap-2">
