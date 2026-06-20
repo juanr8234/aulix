@@ -14,7 +14,8 @@ import ReactFlow, {
   useEdgesState,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Eye, Pencil, RotateCcw, X, CheckCircle2, Circle, Clock } from 'lucide-react';
+import { Eye, Pencil, RotateCcw, X, Circle, Clock } from 'lucide-react';
+import Modal from '../components/Modal';
 import { useStore } from '../store';
 import { hexToRgba } from '../lib/utils';
 import { useT } from '../lib/i18n';
@@ -93,6 +94,7 @@ const nodeTypes = { subject: SubjectNode };
 function nextStatus(s: Subject['status']): Subject['status'] {
   switch (s) {
     case 'pending':
+      return 'ongoing';
     case 'ongoing':
       return 'regular';
     case 'regular':
@@ -109,11 +111,24 @@ export default function Simulator() {
 
   const [mode, setMode] = useState<'view' | 'edit'>('view');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [warningSubj, setWarningSubj] = useState<{ subject: Subject; missing: { approved: Subject[]; regular: Subject[] } } | null>(null);
 
   const subjectMap = useMemo(
     () => Object.fromEntries(subjects.map((s) => [s.id, s])) as Record<string, Subject>,
     [subjects],
   );
+
+  const handleStatusChange = useCallback((id: string, newStatus: Subject['status']) => {
+    const s = subjectMap[id];
+    if (!s) return;
+    if (newStatus === 'ongoing') {
+      const missing = getMissingReqs(s, subjectMap);
+      if (missing.approved.length > 0 || missing.regular.length > 0) {
+        setWarningSubj({ subject: s, missing });
+      }
+    }
+    updateSubject(id, { status: newStatus });
+  }, [subjectMap, updateSubject]);
 
   // Estado derivado por materia
   const derivedMap = useMemo(() => {
@@ -183,8 +198,8 @@ export default function Simulator() {
   const handleCycle = useCallback((id: string) => {
     const s = subjectMap[id];
     if (!s) return;
-    updateSubject(id, { status: nextStatus(s.status) });
-  }, [subjectMap, updateSubject]);
+    handleStatusChange(id, nextStatus(s.status));
+  }, [subjectMap, handleStatusChange]);
 
   const initialNodes: Node<NodeData>[] = useMemo(
     () =>
@@ -379,7 +394,7 @@ export default function Simulator() {
             derived={derivedMap[selected.id] ?? 'locked'}
             byId={subjectMap}
             onClose={() => setSelectedId(null)}
-            onChangeStatus={(status) => updateSubject(selected.id, { status })}
+            onChangeStatus={(status) => handleStatusChange(selected.id, status)}
           />
         )}
       </div>
@@ -387,6 +402,7 @@ export default function Simulator() {
       {/* Footer leyenda */}
       <div className="px-6 py-2 border-t border-line bg-bg-elev/40 text-[11px] text-ink-mute flex flex-wrap gap-4 items-center">
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: DERIVED_COLOR.available }} /> {t('simulator.legendAvailable')}</span>
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: DERIVED_COLOR.ongoing }} /> {t('simulator.legendOngoing')}</span>
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: DERIVED_COLOR.regular }} /> {t('simulator.legendRegular')}</span>
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: DERIVED_COLOR.approved }} /> {t('simulator.legendApproved')}</span>
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: DERIVED_COLOR.locked }} /> {t('simulator.legendLocked')}</span>
@@ -394,6 +410,52 @@ export default function Simulator() {
         <span className="flex items-center gap-1.5"><span className="inline-block w-6 border-t border-dashed border-amber-400" /> {t('simulator.edgeRegular')}</span>
         {mode === 'edit' && <span className="ml-auto text-amber-400">{t('simulator.editHint')}</span>}
       </div>
+
+      {/* Modal de Advertencia de Correlativas */}
+      {warningSubj && (
+        <Modal
+          open
+          onClose={() => setWarningSubj(null)}
+          title="Advertencia: Correlativas pendientes"
+          footer={
+            <button className="btn-primary" onClick={() => setWarningSubj(null)}>
+              Entendido
+            </button>
+          }
+        >
+          <div className="space-y-3">
+            <p className="text-sm text-ink-dim">
+              Estás marcando <strong>{warningSubj.subject.name}</strong> como <strong>Cursando</strong>, pero aún no cumples con los siguientes requisitos del plan de estudios:
+            </p>
+            <div className="card p-4 bg-red-500/5 border border-red-500/20 space-y-3">
+              {warningSubj.missing.approved.length > 0 && (
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-red-300 font-semibold mb-1">
+                    Debe estar aprobada:
+                  </div>
+                  <ul className="list-disc pl-5 text-xs space-y-1 text-ink">
+                    {warningSubj.missing.approved.map((s) => (
+                      <li key={s.id}>{s.name} {s.code ? `(${s.code})` : ''}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {warningSubj.missing.regular.length > 0 && (
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-amber-300 font-semibold mb-1">
+                    Debe estar regularizada:
+                  </div>
+                  <ul className="list-disc pl-5 text-xs space-y-1 text-ink">
+                    {warningSubj.missing.regular.map((s) => (
+                      <li key={s.id}>{s.name} {s.code ? `(${s.code})` : ''}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
@@ -445,10 +507,15 @@ function SubjectDetail({
 
       <div className="p-4 border-b border-line">
         <div className="text-[11px] uppercase tracking-wide text-ink-mute mb-2">{t('simulator.changeStatus')}</div>
-        <div className="grid grid-cols-3 gap-1.5">
-          {(['pending', 'regular', 'approved'] as const).map((opt) => {
+        <div className="grid grid-cols-2 gap-1.5">
+          {(['pending', 'ongoing', 'regular', 'approved'] as const).map((opt) => {
             const active = subject.status === opt;
-            const labels = { pending: t('simulator.stPending'), regular: t('simulator.stRegular'), approved: t('simulator.stApproved') };
+            const labels = {
+              pending: t('simulator.stPending'),
+              ongoing: t('simulator.stOngoing'),
+              regular: t('simulator.stRegular'),
+              approved: t('simulator.stApproved')
+            };
             return (
               <button
                 key={opt}
@@ -486,39 +553,53 @@ function SubjectDetail({
         </div>
       )}
 
+      {/* Requisitos para Cursar y Rendir Final */}
       {(approvedReqs.length > 0 || regularReqs.length > 0) && (
-        <div className="p-4 border-b border-line">
-          <div className="text-[11px] uppercase tracking-wide text-ink-mute mb-2">{t('simulator.correlatives')}</div>
-          {approvedReqs.length > 0 && (
-            <>
-              <div className="text-[11px] text-emerald-400 font-semibold mt-1 mb-1">{t('simulator.approved')}</div>
-              <ul className="space-y-1">
-                {approvedReqs.map((s) => (
-                  <li key={`a-${s.id}`} className="text-xs flex items-center gap-2">
-                    {isOk(s, 'approved')
-                      ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      : <Circle className="w-3.5 h-3.5 text-ink-mute shrink-0" />}
-                    <span className={isOk(s, 'approved') ? 'text-ink' : 'text-ink-dim'}>{s.name}</span>
+        <div className="p-4 border-b border-line space-y-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-wide text-ink-mute mb-2">Para Cursar</div>
+            <ul className="space-y-1.5">
+              {approvedReqs.map((s) => {
+                const met = isOk(s, 'approved');
+                return (
+                  <li key={`curs-app-${s.id}`} className="text-xs flex items-center justify-between gap-2">
+                    <span className={met ? 'text-ink' : 'text-ink-dim truncate flex-1'}>{s.name}</span>
+                    <span className={`chip text-[10px] py-0.5 px-2 font-semibold shrink-0 ${met ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-red-500/15 text-red-300 border-red-500/30'}`}>
+                      {met ? 'Aprobada' : 'Falta Aprobada'}
+                    </span>
                   </li>
-                ))}
-              </ul>
-            </>
-          )}
-          {regularReqs.length > 0 && (
-            <>
-              <div className="text-[11px] text-amber-400 font-semibold mt-3 mb-1">{t('simulator.regular')}</div>
-              <ul className="space-y-1">
-                {regularReqs.map((s) => (
-                  <li key={`r-${s.id}`} className="text-xs flex items-center gap-2">
-                    {isOk(s, 'regular')
-                      ? <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                      : <Circle className="w-3.5 h-3.5 text-ink-mute shrink-0" />}
-                    <span className={isOk(s, 'regular') ? 'text-ink' : 'text-ink-dim'}>{s.name}</span>
+                );
+              })}
+              {regularReqs.map((s) => {
+                const met = isOk(s, 'regular');
+                return (
+                  <li key={`curs-reg-${s.id}`} className="text-xs flex items-center justify-between gap-2">
+                    <span className={met ? 'text-ink' : 'text-ink-dim truncate flex-1'}>{s.name}</span>
+                    <span className={`chip text-[10px] py-0.5 px-2 font-semibold shrink-0 ${met ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-red-500/15 text-red-300 border-red-500/30'}`}>
+                      {met ? 'Regular' : 'Falta Regular'}
+                    </span>
                   </li>
-                ))}
-              </ul>
-            </>
-          )}
+                );
+              })}
+            </ul>
+          </div>
+
+          <div className="pt-3 border-t border-line/45">
+            <div className="text-[11px] uppercase tracking-wide text-ink-mute mb-2">Para Rendir Final</div>
+            <ul className="space-y-1.5">
+              {[...approvedReqs, ...regularReqs].map((s) => {
+                const met = isOk(s, 'approved');
+                return (
+                  <li key={`fin-app-${s.id}`} className="text-xs flex items-center justify-between gap-2">
+                    <span className={met ? 'text-ink' : 'text-ink-dim truncate flex-1'}>{s.name}</span>
+                    <span className={`chip text-[10px] py-0.5 px-2 font-semibold shrink-0 ${met ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-red-500/15 text-red-300 border-red-500/30'}`}>
+                      {met ? 'Aprobada' : 'Falta Aprobada'}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       )}
 

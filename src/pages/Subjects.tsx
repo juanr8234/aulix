@@ -5,6 +5,7 @@ import { SUBJECT_COLORS, hexToRgba, pickColor, uid } from '../lib/utils';
 import { WEEKDAYS, type ScheduleSlot, type Subject, type Weekday } from '../types';
 import { useT } from '../lib/i18n';
 import Modal from '../components/Modal';
+import { getMissingReqs } from '../lib/simulator';
 
 const STATUS_COLOR: Record<Subject['status'], string> = {
   pending: 'bg-bg-soft text-ink-dim',
@@ -130,6 +131,7 @@ export default function Subjects() {
 
 function SubjectForm({ subject, onClose }: { subject: Subject | null; onClose: () => void }) {
   const t = useT();
+  const subjects = useStore((s) => s.subjects);
   const addSubject = useStore((s) => s.addSubject);
   const updateSubject = useStore((s) => s.updateSubject);
   const subjectsCount = useStore((s) => s.subjects.length);
@@ -143,6 +145,7 @@ function SubjectForm({ subject, onClose }: { subject: Subject | null; onClose: (
     : undefined;
 
   const [name, setName] = useState(subject?.name ?? '');
+  const [warningSubj, setWarningSubj] = useState<{ name: string; missing: { approved: Subject[]; regular: Subject[] } } | null>(null);
   const [code, setCode] = useState(subject?.code ?? '');
   const [professor, setProfessor] = useState(subject?.professor ?? '');
   const [classroom, setClassroom] = useState(subject?.classroom ?? '');
@@ -165,6 +168,20 @@ function SubjectForm({ subject, onClose }: { subject: Subject | null; onClose: (
       classroom: classroom.trim() || undefined,
       color, status, slots,
     };
+
+    let hasWarning = false;
+    if (status === 'ongoing') {
+      const subjectMap = Object.fromEntries(subjects.map((s) => [s.id, s])) as Record<string, Subject>;
+      const tempSubj: Subject = subject 
+        ? { ...subject, ...payload } 
+        : { id: 'temp', ...payload, createdAt: Date.now(), slots: [], correlativesApproved: [], correlativesRegular: [] };
+      const missing = getMissingReqs(tempSubj, subjectMap);
+      if (missing.approved.length > 0 || missing.regular.length > 0) {
+        setWarningSubj({ name: name.trim(), missing });
+        hasWarning = true;
+      }
+    }
+
     let subjectId = subject?.id;
     if (subject) {
       updateSubject(subject.id, payload);
@@ -183,7 +200,10 @@ function SubjectForm({ subject, onClose }: { subject: Subject | null; onClose: (
         addGrade({ subjectId, label: 'Final', score, weight: 1, date: today });
       }
     }
-    onClose();
+
+    if (!hasWarning) {
+      onClose();
+    }
   };
 
   return (
@@ -293,6 +313,52 @@ function SubjectForm({ subject, onClose }: { subject: Subject | null; onClose: (
           </div>
         </div>
       </div>
+
+      {/* Modal de Advertencia de Correlativas Pendientes */}
+      {warningSubj && (
+        <Modal
+          open
+          onClose={onClose}
+          title="Advertencia: Correlativas pendientes"
+          footer={
+            <button className="btn-primary" onClick={onClose}>
+              Entendido
+            </button>
+          }
+        >
+          <div className="space-y-3">
+            <p className="text-sm text-ink-dim">
+              Has marcado la materia <strong>{warningSubj.name}</strong> como <strong>Cursando</strong>, pero aún no cumples con los siguientes requisitos del plan de estudios:
+            </p>
+            <div className="card p-4 bg-red-500/5 border border-red-500/20 space-y-3">
+              {warningSubj.missing.approved.length > 0 && (
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-red-300 font-semibold mb-1">
+                    Debe estar aprobada:
+                  </div>
+                  <ul className="list-disc pl-5 text-xs space-y-1 text-ink">
+                    {warningSubj.missing.approved.map((s) => (
+                      <li key={s.id}>{s.name} {s.code ? `(${s.code})` : ''}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {warningSubj.missing.regular.length > 0 && (
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-amber-300 font-semibold mb-1">
+                    Debe estar regularizada:
+                  </div>
+                  <ul className="list-disc pl-5 text-xs space-y-1 text-ink">
+                    {warningSubj.missing.regular.map((s) => (
+                      <li key={s.id}>{s.name} {s.code ? `(${s.code})` : ''}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
     </Modal>
   );
 }

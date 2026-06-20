@@ -6,6 +6,7 @@ import { type Task, type TaskKind, type TaskPriority, type TaskStatus } from '..
 import { useT } from '../lib/i18n';
 import Modal from '../components/Modal';
 import SubjectChip from '../components/SubjectChip';
+import { deriveStatus } from '../lib/simulator';
 
 const COLUMNS: { key: TaskStatus; labelKey: string; tone: string }[] = [
   { key: 'todo', labelKey: 'tasks.colTodo', tone: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
@@ -35,6 +36,19 @@ export default function Tracking() {
   const [editing, setEditing] = useState<Task | null>(null);
   const [creating, setCreating] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState<string>('all');
+
+  const subjectsById = useMemo(
+    () => Object.fromEntries(subjects.map((s) => [s.id, s])) as Record<string, typeof subjects[0]>,
+    [subjects]
+  );
+
+  const activeSubjects = useMemo(() => {
+    return subjects.filter((s) => {
+      if (s.status === 'approved') return false;
+      if (s.status === 'ongoing' || s.status === 'regular') return true;
+      return deriveStatus(s, subjectsById) === 'available';
+    });
+  }, [subjects, subjectsById]);
 
   const grouped = useMemo(() => {
     const g: Record<TaskStatus, Task[]> = { todo: [], doing: [], done: [] };
@@ -89,7 +103,7 @@ export default function Tracking() {
           >
             <option value="all">{t('tasks.allSubjects')}</option>
             <option value="none">{t('tasks.noSubject')}</option>
-            {subjects.map((s) => (
+            {activeSubjects.map((s) => (
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
           </select>
@@ -226,6 +240,20 @@ function TaskForm({ task, onClose }: { task: Task | null; onClose: () => void })
   const addTask = useStore((s) => s.addTask);
   const updateTask = useStore((s) => s.updateTask);
 
+  const subjectsById = useMemo(
+    () => Object.fromEntries(subjects.map((s) => [s.id, s])) as Record<string, typeof subjects[0]>,
+    [subjects]
+  );
+
+  const activeSubjects = useMemo(() => {
+    return subjects.filter((s) => {
+      if (s.id === task?.subjectId) return true;
+      if (s.status === 'approved') return false;
+      if (s.status === 'ongoing' || s.status === 'regular') return true;
+      return deriveStatus(s, subjectsById) === 'available';
+    });
+  }, [subjects, subjectsById, task]);
+
   const [title, setTitle] = useState(task?.title ?? '');
   const [description, setDescription] = useState(task?.description ?? '');
   const [kind, setKind] = useState<TaskKind>(task?.kind ?? 'task');
@@ -303,7 +331,7 @@ function TaskForm({ task, onClose }: { task: Task | null; onClose: () => void })
             <label className="label">Materia</label>
             <select className="input" value={subjectId ?? ''} onChange={(e) => setSubjectId(e.target.value || null)}>
               <option value="">Sin asignar</option>
-              {subjects.map((s) => (
+              {activeSubjects.map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>

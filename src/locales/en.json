@@ -336,6 +336,7 @@
     "resetTitle": "Reset all statuses",
     "nodeTitle": "Click: see details · Double-click: change status",
     "legendAvailable": "Available",
+    "legendOngoing": "Taking",
     "legendRegular": "Oral pending",
     "legendApproved": "Passed",
     "legendLocked": "Locked",
@@ -345,6 +346,7 @@
     "level": "Level",
     "changeStatus": "Change status",
     "stPending": "Not taken",
+    "stOngoing": "Taking",
     "stRegular": "Oral pending",
     "stApproved": "Passed",
     "missing": "Still needed to enroll",
@@ -357,6 +359,7 @@
     "derived": {
       "locked": "Locked",
       "available": "Available",
+      "ongoing": "Taking",
       "regular": "Oral pending",
       "approved": "Passed"
     }

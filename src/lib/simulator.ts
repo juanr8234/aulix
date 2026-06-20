@@ -31,6 +31,7 @@ export function deriveStatus(
 ): DerivedStatus {
   if (subject.status === 'approved') return 'approved';
   if (subject.status === 'regular') return 'regular';
+  if (subject.status === 'ongoing') return 'ongoing';
 
   const approvedReqs = getApprovedReqs(subject);
   const regularReqs = getRegularReqs(subject);
@@ -66,6 +67,7 @@ export function getMissingReqs(
 export const DERIVED_COLOR: Record<DerivedStatus, string> = {
   locked: '#6b7795',    // gris (no cursable)
   available: '#3b82f6', // azul (cursable)
+  ongoing: '#06b6d4',   // cian (cursando)
   regular: '#f59e0b',   // amarillo
   approved: '#22c55e',  // verde
 };
@@ -73,6 +75,7 @@ export const DERIVED_COLOR: Record<DerivedStatus, string> = {
 export const DERIVED_LABEL: Record<DerivedStatus, string> = {
   locked: 'No cursable',
   available: 'Cursable',
+  ongoing: 'Cursando',
   regular: 'Regular',
   approved: 'Aprobada',
 };

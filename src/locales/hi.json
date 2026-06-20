@@ -336,6 +336,7 @@
     "resetTitle": "सभी स्थितियाँ रीसेट करें",
     "nodeTitle": "क्लिक: विवरण · डबल-क्लिक: स्थिति बदलें",
     "legendAvailable": "उपलब्ध",
+    "legendOngoing": "अध्ययनरत",
     "legendRegular": "मौखिक शेष",
     "legendApproved": "उत्तीर्ण",
     "legendLocked": "लॉक्ड",
@@ -345,6 +346,7 @@
     "level": "स्तर",
     "changeStatus": "स्थिति बदलें",
     "stPending": "नहीं लिया",
+    "stOngoing": "अध्ययनरत",
     "stRegular": "मौखिक शेष",
     "stApproved": "उत्तीर्ण",
     "missing": "नामांकन हेतु अभी आवश्यक",
@@ -357,6 +359,7 @@
     "derived": {
       "locked": "लॉक्ड",
       "available": "उपलब्ध",
+      "ongoing": "अध्ययनरत",
       "regular": "मौखिक शेष",
       "approved": "उत्तीर्ण"
     }

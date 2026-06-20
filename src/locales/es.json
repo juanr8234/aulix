@@ -336,6 +336,7 @@
     "resetTitle": "Reiniciar todos los estados",
     "nodeTitle": "Click: ver detalle · Doble click: cambiar estado",
     "legendAvailable": "Cursable",
+    "legendOngoing": "Cursando",
     "legendRegular": "Regular",
     "legendApproved": "Aprobada",
     "legendLocked": "No cursable",
@@ -345,6 +346,7 @@
     "level": "Nivel",
     "changeStatus": "Cambiar estado",
     "stPending": "No cursada",
+    "stOngoing": "Cursando",
     "stRegular": "Regular",
     "stApproved": "Aprobada",
     "missing": "Te falta para cursar",
@@ -357,6 +359,7 @@
     "derived": {
       "locked": "No cursable",
       "available": "Cursable",
+      "ongoing": "Cursando",
       "regular": "Regular",
       "approved": "Aprobada"
     }

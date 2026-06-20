@@ -44,7 +44,7 @@ export interface Subject {
  * - regular: ya está regular
  * - approved: ya está aprobada
  */
-export type DerivedStatus = 'locked' | 'available' | 'regular' | 'approved';
+export type DerivedStatus = 'locked' | 'available' | 'ongoing' | 'regular' | 'approved';
 
 export interface RepoLink {
   id: string;
