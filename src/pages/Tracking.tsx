@@ -6,7 +6,6 @@ import { type Task, type TaskKind, type TaskPriority, type TaskStatus } from '..
 import { useT } from '../lib/i18n';
 import Modal from '../components/Modal';
 import SubjectChip from '../components/SubjectChip';
-import { deriveStatus } from '../lib/simulator';
 
 const COLUMNS: { key: TaskStatus; labelKey: string; tone: string }[] = [
   { key: 'todo', labelKey: 'tasks.colTodo', tone: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
@@ -37,18 +36,11 @@ export default function Tracking() {
   const [creating, setCreating] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState<string>('all');
 
-  const subjectsById = useMemo(
-    () => Object.fromEntries(subjects.map((s) => [s.id, s])) as Record<string, typeof subjects[0]>,
-    [subjects]
-  );
-
   const activeSubjects = useMemo(() => {
     return subjects.filter((s) => {
-      if (s.status === 'approved') return false;
-      if (s.status === 'ongoing' || s.status === 'regular') return true;
-      return deriveStatus(s, subjectsById) === 'available';
+      return s.status === 'ongoing' || s.status === 'regular';
     });
-  }, [subjects, subjectsById]);
+  }, [subjects]);
 
   const grouped = useMemo(() => {
     const g: Record<TaskStatus, Task[]> = { todo: [], doing: [], done: [] };
@@ -240,19 +232,12 @@ function TaskForm({ task, onClose }: { task: Task | null; onClose: () => void })
   const addTask = useStore((s) => s.addTask);
   const updateTask = useStore((s) => s.updateTask);
 
-  const subjectsById = useMemo(
-    () => Object.fromEntries(subjects.map((s) => [s.id, s])) as Record<string, typeof subjects[0]>,
-    [subjects]
-  );
-
   const activeSubjects = useMemo(() => {
     return subjects.filter((s) => {
       if (s.id === task?.subjectId) return true;
-      if (s.status === 'approved') return false;
-      if (s.status === 'ongoing' || s.status === 'regular') return true;
-      return deriveStatus(s, subjectsById) === 'available';
+      return s.status === 'ongoing' || s.status === 'regular';
     });
-  }, [subjects, subjectsById, task]);
+  }, [subjects, task]);
 
   const [title, setTitle] = useState(task?.title ?? '');
   const [description, setDescription] = useState(task?.description ?? '');
